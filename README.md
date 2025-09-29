@@ -1,4 +1,4 @@
-# 📝 Board de Tarefas
+# 📝 Board de Tarefas - Desafio 03
 
 Um pequeno **aplicativo de lista de tarefas** feito com **HTML, CSS e JavaScript puro**.  
 Permite criar tarefas, marcar como concluídas e acompanhar o progresso de forma prática e visual.  
