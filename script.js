@@ -18,9 +18,7 @@ const saveTasksToStorage = (tasks) => {
 // TASK HELPERS
 // ------------------------------
 const generateTaskId = () => {
-  const tasks = getTasksFromStorage();
-  const lastId = tasks[tasks.length - 1]?.id;
-  return lastId !== undefined ? Number(lastId) + 1 : 1;
+  return Date.now() + Math.floor(Math.random() * 1000);
 };
 
 const buildTaskObject = (description, label) => ({
@@ -31,11 +29,10 @@ const buildTaskObject = (description, label) => ({
   checked: false,
 });
 
-const toggleTaskStatus = (tasks, taskId) => {
-  return tasks.map(task =>
+const toggleTaskStatus = (tasks, taskId) =>
+  tasks.map((task) =>
     task.id === taskId ? { ...task, checked: !task.checked } : task
   );
-};
 
 const addTaskToStorage = (task) => {
   const tasks = [...getTasksFromStorage(), task];
@@ -49,8 +46,11 @@ const addTaskToStorage = (task) => {
 const renderTaskProgress = (tasks) => {
   const progressEl = document.getElementById("tasks-progress");
   if (!progressEl) return;
-  const doneCount = tasks.filter(task => task.checked).length;
-  progressEl.textContent = `Tarefas concluídas: ${doneCount}`;
+  const doneCount = tasks.filter((task) => task.checked).length;
+  const total = tasks.length;
+  const plural = total === 1 ? "tarefa" : "tarefas";
+  const donePlural = doneCount === 1 ? "tarefa concluída" : "tarefas concluídas";
+  progressEl.textContent = `${total} ${plural}, ${doneCount} ${donePlural}`;
 };
 
 const createTaskElement = (task) => {
@@ -96,7 +96,7 @@ const renderTasks = (tasks) => {
   const listEl = document.getElementById("todo-list");
   if (!listEl) return;
   listEl.innerHTML = "";
-  tasks.forEach(task => listEl.appendChild(createTaskElement(task)));
+  tasks.forEach((task) => listEl.appendChild(createTaskElement(task)));
   renderTaskProgress(tasks);
 };
 
@@ -127,11 +127,22 @@ const handleFormSubmit = (event) => {
   event.target.reset();
 };
 
+const handleRemoveCompleted = () => {
+  const tasks = getTasksFromStorage();
+  const filtered = tasks.filter((task) => !task.checked);
+  saveTasksToStorage(filtered);
+  renderTasks(filtered);
+};
+
 // ------------------------------
 // INIT
 // ------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const formEl = document.getElementById("create-todo-form");
+  const removeBtn = document.getElementById("remove-completed");
+
   if (formEl) formEl.addEventListener("submit", handleFormSubmit);
+  if (removeBtn) removeBtn.addEventListener("click", handleRemoveCompleted);
+
   renderTasks(getTasksFromStorage());
 });
